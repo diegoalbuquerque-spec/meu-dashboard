@@ -378,7 +378,7 @@
 
     <div class="note">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.6v4.2M8 11.2v.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      <div><b>Dados reais</b> da aba <span class="mono">Respostas do formulário</span>, lidos em 09/09/2026 18h28. São as 9 solicitações que existem nessa base — ela começou em 02/09. O histórico anterior (70 solicitações desde 25/06) está na planilha antiga e não tem coluna de status, por isso não entra aqui. Os quatro filtros acima funcionam sobre esses registros — tudo na página recalcula.</div>
+      <div><b>Dados reais</b> da aba <span class="mono">Respostas do formulário</span>, lidos em 12/09/2026 18h29. São as 13 solicitações que existem nessa base — ela começou em 01/09. O histórico anterior (70 solicitações desde 25/06) está na planilha antiga e não tem coluna de status, por isso não entra aqui. Os quatro filtros acima funcionam sobre esses registros — tudo na página recalcula.</div>
     </div>
 
     <div class="filters">
@@ -762,17 +762,21 @@ END</code></pre>
   "use strict";
 
   /* ================= dados reais (9 registros, leitura 09/09/2026 18h28) ================= */
-  var TODAY = "2026-09-09";
+  var TODAY = "2026-09-12";
   var ROWS = [
-    { prot: null,         data: "2026-09-02", motivo: "Dúvidas fornecedor e produto", depto: "Jurídico",         quem: "Henrique Amorim Guarnieri", status: "Concluída" },
-    { prot: null,         data: "2026-09-03", motivo: "Acessos",                      depto: "Jurídico",         quem: "Henrique Amorim Guarnieri", status: "Concluída" },
-    { prot: null,         data: "2026-09-03", motivo: "Dúvidas fornecedor e produto", depto: "Compras",          quem: "David Casal Barbosa",       status: "Concluída" },
-    { prot: "1788790123", data: "2026-09-07", motivo: "Sugestões",                    depto: "Jurídico",         quem: "Diego Albuquerque",         status: "Concluída" },
-    { prot: "1788807270", data: "2026-09-07", motivo: "Sugestões",                    depto: "Jurídico",         quem: "Diego Albuquerque",         status: "Concluída" },
-    { prot: "1788816621", data: "2026-09-07", motivo: "Sugestões",                    depto: "Marketing",        quem: "Diego Albuquerque",         status: "Concluída" },
-    { prot: "1788877714", data: "2026-09-08", motivo: "Sugestões",                    depto: "Jurídico",         quem: "Diego Albuquerque",         status: "Pendente"  },
-    { prot: "1788963338", data: "2026-09-09", motivo: "Dúvidas fornecedor e produto", depto: "Recursos Humanos", quem: "Fernanda Serrador Eusebio", status: "Pendente"  },
-    { prot: "1788976984", data: "2026-09-09", motivo: "Dúvidas fornecedor e produto", depto: "Compras",          quem: "Jonathan Ferreira Martins", status: "Pendente"  }
+    { prot: null, data: "2026-09-01", motivo: "Dúvidas fornecedor e produto", depto: "Recursos Humanos", quem: "Fernanda Serrador Eusebio", status: "Pendente" },
+    { prot: null, data: "2026-09-01", motivo: "Dúvidas fornecedor e produto", depto: "Compras", quem: "Jonathan Ferreira Martins", status: "Pendente" },
+    { prot: null, data: "2026-09-01", motivo: "Dúvidas fornecedor e produto", depto: "Compras", quem: "David Casal Barbosa", status: "Pendente" },
+    { prot: null, data: "2026-09-02", motivo: "Dúvidas fornecedor e produto", depto: "Jurídico", quem: "Henrique Amorim Guarnieri", status: "Pendente" },
+    { prot: null, data: "2026-09-02", motivo: "Dúvidas fornecedor e produto", depto: "Compras", quem: "Jonathan Ferreira Martins", status: "Pendente" },
+    { prot: null, data: "2026-09-03", motivo: "Acessos", depto: "Jurídico", quem: "Henrique Amorim Guarnieri", status: "Pendente" },
+    { prot: null, data: "2026-09-03", motivo: "Dúvidas fornecedor e produto", depto: "Compras", quem: "David Casal Barbosa", status: "Pendente" },
+    { prot: "1788790123", data: "2026-09-07", motivo: "Sugestões", depto: "Jurídico", quem: "Diego Albuquerque", status: "Pendente" },
+    { prot: "1788807270", data: "2026-09-07", motivo: "Sugestões", depto: "Jurídico", quem: "Diego Albuquerque", status: "Pendente" },
+    { prot: "1788816621", data: "2026-09-07", motivo: "Sugestões", depto: "Marketing", quem: "Diego Albuquerque", status: "Pendente" },
+    { prot: "1789061719", data: "2026-09-10", motivo: "Acessos", depto: "Operações", quem: "Alcione Barreto", status: "Pendente" },
+    { prot: "1789143161", data: "2026-09-11", motivo: "Dúvidas fornecedor e produto", depto: "Jurídico", quem: "Henrique Amorim Guarnieri", status: "Pendente" },
+    { prot: "1789152931", data: "2026-09-11", motivo: "Dúvida outros", depto: "Recursos Humanos", quem: "Keyla Santos", status: "Pendente" }
   ];
   var DONE = "Concluída";
 

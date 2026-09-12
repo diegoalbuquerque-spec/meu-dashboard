@@ -1,0 +1,51 @@
+/* Ajustes visuais do painel Canal Suporte TOTVS */
+
+/* 1. Logo da Shippify na barra do topo */
+.topbar-in::before{
+  content:"";
+  flex:0 0 auto;
+  width:141px;
+  height:24px;
+  background:url(data:image/webp;base64,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) no-repeat left center;
+  background-size:contain;
+}
+@media (max-width:600px){
+  .topbar-in::before{ width:100px; height:17px; }
+}
+
+/* 2. Filtros: texto claro sobre fundo escuro em qualquer sistema.
+      Sem isto o navegador pode desenhar o controle com fundo branco
+      e o texto branco some. */
+.ctl{ min-width:0; }
+
+#f-from,#f-to,#f-status,#f-motivo,#f-depto{
+  background-color:#0f141a;
+  color:#f2f5f8;
+  color-scheme:dark;
+  border:1px solid #2b333d;
+  border-radius:6px;
+  padding:3px 6px;
+  font:inherit;
+}
+
+/* datas precisam de largura fixa para nao cortar o dd/mm/aaaa */
+#f-from,#f-to{ flex:0 0 auto; min-width:9em; }
+
+/* os tres seletores podem encolher para caber na linha */
+#f-status,#f-motivo,#f-depto{ flex:1 1 auto; min-width:0; max-width:100%; }
+
+#f-status option,#f-motivo option,#f-depto option{
+  background-color:#0f141a;
+  color:#f2f5f8;
+}
+#f-from:focus-visible,#f-to:focus-visible,
+#f-status:focus-visible,#f-motivo:focus-visible,#f-depto:focus-visible{
+  outline:2px solid #f5a524;
+  outline-offset:1px;
+}
+#f-from::-webkit-calendar-picker-indicator,
+#f-to::-webkit-calendar-picker-indicator{
+  filter:invert(1);
+  opacity:.75;
+  cursor:pointer;
+}

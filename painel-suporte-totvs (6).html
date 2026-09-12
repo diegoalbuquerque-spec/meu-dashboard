@@ -1,0 +1,1185 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel Suporte TOTVS</title>
+<meta name="description" content="Painel Canal - Suporte TOTVS com dados reais e filtros funcionais, mais o guia de implementação no Looker Studio.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  html { color-scheme: light; }
+  body { margin: 0; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<style>
+  :root {
+    color-scheme: light;
+    --plane:        #f1f4f7;
+    --surface:      #ffffff;
+    --surface-2:    #f7f9fb;
+    --line:         #e2e7ec;
+    --line-strong:  #ccd4dc;
+    --ink:          #101720;
+    --ink-2:        #4d5761;
+    --ink-3:        #7d8894;
+    --grid:         #eaeef2;
+    --axis:         #ccd4dc;
+    --s1:           #c8931a;
+    --s2:           #cf3a3f;
+    --ord-1:        #d9b23c;
+    --ord-2:        #c8931a;
+    --ord-3:        #a3760f;
+    --ord-4:        #7a5809;
+    --good:         #0a7c0a;
+    --warning:      #9a6a05;
+    --critical:     #b53232;
+    --good-bg:      #e8f5e8;
+    --warning-bg:   #fdf3dd;
+    --critical-bg:  #fceaea;
+    --shadow:       0 1px 2px rgba(16,23,32,.05), 0 8px 24px -16px rgba(16,23,32,.16);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --plane:        #0d1116;
+      --surface:      #171c22;
+      --surface-2:    #1d232b;
+      --line:         #2a323b;
+      --line-strong:  #3b4551;
+      --ink:          #f2f5f8;
+      --ink-2:        #aab4c0;
+      --ink-3:        #7d8894;
+      --grid:         #232a32;
+      --axis:         #38414c;
+      --s1:           #f5c518;
+      --s2:           #e5484d;
+      --ord-1:        #9a7a14;
+      --ord-2:        #c09a14;
+      --ord-3:        #dcb016;
+      --ord-4:        #f5c518;
+      --good:         #3fbb3f;
+      --warning:      #e8ab27;
+      --critical:     #e56c6c;
+      --good-bg:      #14290f;
+      --warning-bg:   #2e2308;
+      --critical-bg:  #2e1414;
+      --shadow:       0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --plane:        #0d1116;
+    --surface:      #171c22;
+    --surface-2:    #1d232b;
+    --line:         #2a323b;
+    --line-strong:  #3b4551;
+    --ink:          #f2f5f8;
+    --ink-2:        #aab4c0;
+    --ink-3:        #7d8894;
+    --grid:         #232a32;
+    --axis:         #38414c;
+    --s1:           #f5c518;
+    --s2:           #e5484d;
+    --ord-1:        #9a7a14;
+    --ord-2:        #c09a14;
+    --ord-3:        #dcb016;
+    --ord-4:        #f5c518;
+    --good:         #3fbb3f;
+    --warning:      #e8ab27;
+    --critical:     #e56c6c;
+    --good-bg:      #14290f;
+    --warning-bg:   #2e2308;
+    --critical-bg:  #2e1414;
+    --shadow:       0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--plane);
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 { font-family: "Archivo", system-ui, sans-serif; margin: 0; text-wrap: balance; }
+
+  /* ---- top bar ---- */
+  .topbar {
+    position: sticky; top: 0; z-index: 40;
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar-in {
+    max-width: 1160px; margin: 0 auto; padding: 12px 20px;
+    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 10px; margin-right: auto; }
+  .brand strong { font-family: "Archivo"; font-weight: 700; font-size: 17px; letter-spacing: -.01em; }
+  .brand span {
+    font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: .08em;
+  }
+  .tabs { display: flex; gap: 4px; background: var(--surface-2); padding: 3px; border-radius: 9px; border: 1px solid var(--line); }
+  .tabs button {
+    font-family: "Archivo"; font-weight: 600; font-size: 13px;
+    border: 0; background: transparent; color: var(--ink-2);
+    padding: 6px 13px; border-radius: 6px; cursor: pointer;
+  }
+  .tabs button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(16,23,32,.12); }
+  .tabs button:focus-visible { outline: 2px solid var(--s1); outline-offset: 1px; }
+
+  main { max-width: 1160px; margin: 0 auto; padding: 24px 20px 72px; }
+
+  .note {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: var(--warning-bg); border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent);
+    color: var(--ink); border-radius: 10px; padding: 11px 14px; font-size: 13.5px; margin-bottom: 22px;
+  }
+  .note b { font-weight: 600; }
+  .note svg { flex: none; margin-top: 2px; }
+
+  /* ---- mock filter row ---- */
+  .filters {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px;
+  }
+  .ctl {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 9px;
+    padding: 7px 11px; display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow);
+  }
+  .ctl .k { font-family: "IBM Plex Mono", monospace; font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-3); flex: none; }
+  .ctl select, .ctl input[type="date"] {
+    font-family: inherit; font-size: 13px; font-weight: 500; color: var(--ink);
+    background: transparent; border: 0; padding: 2px 0; margin-left: auto;
+    max-width: 100%; min-width: 0; cursor: pointer;
+  }
+  .ctl select { text-align: right; text-align-last: right; }
+  .ctl input[type="date"] { font-family: "IBM Plex Mono", monospace; font-size: 12px; cursor: text; }
+  .ctl select:focus-visible, .ctl input:focus-visible { outline: 2px solid var(--s1); outline-offset: 2px; border-radius: 3px; }
+  .ctl.range { gap: 6px; }
+  .ctl.range .dash { color: var(--ink-3); font-size: 12px; flex: none; }
+  .filterbar {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    margin: -6px 0 18px; font-size: 12.5px; color: var(--ink-3);
+  }
+  .filterbar .count { font-family: "IBM Plex Mono", monospace; }
+  .filterbar .count b { color: var(--ink); font-weight: 600; }
+  .clearbtn {
+    font-family: "IBM Plex Mono", monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em;
+    background: transparent; border: 1px solid var(--line-strong); color: var(--ink-2);
+    padding: 3px 9px; border-radius: 6px; cursor: pointer;
+  }
+  .clearbtn:hover { color: var(--ink); border-color: var(--ink-3); }
+  .clearbtn:focus-visible { outline: 2px solid var(--s1); outline-offset: 1px; }
+  .empty {
+    font-size: 13px; color: var(--ink-3); padding: 26px 4px; text-align: center;
+  }
+
+  /* ---- KPI row ---- */
+  .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 18px; }
+  .tile {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 13px 14px 14px; box-shadow: var(--shadow);
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .tile .lbl { font-size: 12.5px; color: var(--ink-2); line-height: 1.35; }
+  .tile .val { font-family: "Archivo"; font-weight: 700; font-size: 30px; line-height: 1.1; letter-spacing: -.02em; margin-top: 4px; }
+  .tile .val small { font-size: 15px; font-weight: 600; color: var(--ink-2); margin-left: 2px; }
+  .delta { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; display: flex; align-items: baseline;
+    gap: 5px; margin-top: 2px; flex-wrap: wrap; }
+  .delta .dir, .delta .ref { white-space: nowrap; }
+  .delta .dir { font-weight: 500; }
+  .delta.up-bad .dir { color: var(--critical); }
+  .delta.down-bad .dir { color: var(--critical); }
+  .delta.up-good .dir { color: var(--good); }
+  .delta .ref { color: var(--ink-3); }
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px; align-self: flex-start;
+    font-family: "IBM Plex Mono", monospace; font-size: 10.5px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: .05em;
+    padding: 2px 7px; border-radius: 5px; margin-top: 4px;
+  }
+  .chip.warn { background: var(--warning-bg); color: var(--warning); }
+  .chip.crit { background: var(--critical-bg); color: var(--critical); }
+  .chip.ok   { background: var(--good-bg);    color: var(--good); }
+
+  /* ---- chart grid ---- */
+  .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 16px 12px; box-shadow: var(--shadow); min-width: 0;
+    display: flex; flex-direction: column;
+  }
+  .span12 { grid-column: span 12; }
+  .span7  { grid-column: span 7; }
+  .span5  { grid-column: span 5; }
+  .span6  { grid-column: span 6; }
+
+  .card-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 2px; }
+  .card-head h3 { font-size: 14.5px; font-weight: 600; letter-spacing: -.005em; }
+  .card-head .sub { font-size: 12.5px; color: var(--ink-3); margin-top: 1px; }
+  .card-head .right { margin-left: auto; display: flex; align-items: center; gap: 10px; flex: none; }
+
+  .legend { display: flex; gap: 12px; align-items: center; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-2); }
+  .swatch { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+
+  .tbtn {
+    font-family: "IBM Plex Mono", monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em;
+    background: transparent; border: 1px solid var(--line-strong); color: var(--ink-2);
+    padding: 3px 8px; border-radius: 6px; cursor: pointer;
+  }
+  .tbtn:hover { color: var(--ink); border-color: var(--ink-3); }
+  .tbtn:focus-visible { outline: 2px solid var(--s1); outline-offset: 1px; }
+
+  .plot { margin-top: 10px; }
+  .plot svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .plot text { font-family: "IBM Plex Mono", monospace; }
+
+  .why {
+    font-size: 12.5px; color: var(--ink-3); border-top: 1px solid var(--line);
+    margin-top: 10px; padding-top: 9px; line-height: 1.5;
+  }
+  .why b { color: var(--ink-2); font-weight: 600; }
+
+  /* ---- tables ---- */
+  .tblwrap { overflow-x: auto; margin-top: 10px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th {
+    font-family: "IBM Plex Mono", monospace; font-size: 10.5px; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--ink-3); font-weight: 500; border-bottom: 1px solid var(--line-strong);
+  }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; font-family: "IBM Plex Mono", monospace; font-size: 12.5px; }
+  tbody tr:last-child td { border-bottom: 0; }
+  .mono { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; vertical-align: 1px; }
+
+  /* ---- tooltip ---- */
+  #tip {
+    position: fixed; z-index: 90; pointer-events: none; opacity: 0;
+    transition: opacity .08s linear;
+    background: var(--surface); border: 1px solid var(--line-strong); border-radius: 8px;
+    box-shadow: 0 4px 18px rgba(16,23,32,.18); padding: 8px 10px; font-size: 12.5px; min-width: 130px;
+  }
+  #tip .t-title { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); margin-bottom: 4px; }
+  #tip .t-row { display: flex; align-items: center; gap: 7px; }
+  #tip .t-row .t-v { margin-left: auto; font-variant-numeric: tabular-nums; font-family: "IBM Plex Mono", monospace; font-weight: 500; }
+
+  .hit { fill: transparent; }
+
+  /* ---- guide ---- */
+  .guide { max-width: 76ch; margin: 0 auto; }
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace; font-size: 10.5px; text-transform: uppercase;
+    letter-spacing: .09em; color: var(--ink-3); margin-bottom: 6px;
+  }
+  .guide h2 { font-size: 22px; font-weight: 700; letter-spacing: -.015em; margin-bottom: 6px; }
+  .guide h3 { font-size: 15.5px; font-weight: 600; margin-bottom: 4px; }
+  .guide > p { color: var(--ink-2); margin: 0 0 24px; }
+  .sec { margin-bottom: 34px; }
+  .sec > .sec-hd { margin-bottom: 14px; }
+
+  ol.steps { list-style: none; counter-reset: st; padding: 0; margin: 0; }
+  ol.steps > li {
+    counter-increment: st; position: relative; padding-left: 44px; padding-bottom: 22px;
+  }
+  ol.steps > li::before {
+    content: counter(st, decimal-leading-zero);
+    position: absolute; left: 0; top: 0;
+    font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 500;
+    color: var(--ink-3); background: var(--surface-2);
+    border: 1px solid var(--line); border-radius: 7px;
+    width: 30px; height: 26px; display: grid; place-items: center;
+  }
+  ol.steps > li::after {
+    content: ""; position: absolute; left: 15px; top: 30px; bottom: 0; width: 1px; background: var(--line);
+  }
+  ol.steps > li:last-child::after { display: none; }
+  ol.steps h4 { font-size: 14.5px; font-weight: 600; margin-bottom: 3px; }
+  ol.steps p { margin: 0 0 8px; color: var(--ink-2); font-size: 14px; }
+  ol.steps p:last-child { margin-bottom: 0; }
+
+  .cfg {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    overflow: hidden; margin: 10px 0 0;
+  }
+  .cfg dl { margin: 0; display: grid; grid-template-columns: minmax(120px, 34%) 1fr; }
+  .cfg dt, .cfg dd { margin: 0; padding: 7px 12px; border-top: 1px solid var(--line); font-size: 13px; }
+  .cfg dt {
+    font-family: "IBM Plex Mono", monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--ink-3); background: var(--surface-2);
+  }
+  .cfg dd { color: var(--ink); }
+  .cfg dl > dt:first-child, .cfg dl > dt:first-child + dd { border-top: 0; }
+
+  code {
+    font-family: "IBM Plex Mono", monospace; font-size: .88em;
+    background: var(--surface-2); border: 1px solid var(--line);
+    padding: 1px 5px; border-radius: 5px; white-space: nowrap;
+  }
+  pre {
+    font-family: "IBM Plex Mono", monospace; font-size: 12.5px; line-height: 1.65;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px 14px; overflow-x: auto; margin: 10px 0 0;
+  }
+  pre code { background: none; border: 0; padding: 0; white-space: pre; font-size: 1em; }
+
+  ul.plain { margin: 0; padding-left: 20px; color: var(--ink-2); font-size: 14px; }
+  ul.plain li { margin-bottom: 6px; }
+  ul.plain b, ol.steps b { color: var(--ink); font-weight: 600; }
+
+  .kill { display: grid; gap: 8px; }
+  .kill-row {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 13px; font-size: 13.5px;
+  }
+  .kill-row .from { color: var(--ink-2); }
+  .kill-row .to { font-weight: 500; }
+  .kill-row .arr { color: var(--ink-3); font-family: "IBM Plex Mono", monospace; font-size: 11px; }
+
+  footer { border-top: 1px solid var(--line); margin-top: 34px; padding-top: 14px; font-size: 12.5px; color: var(--ink-3); }
+
+  @media (max-width: 900px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .filters { grid-template-columns: repeat(2, 1fr); }
+    .span7, .span5, .span6 { grid-column: span 12; }
+    .cfg dl { grid-template-columns: 1fr; }
+    .cfg dd { padding-top: 0; }
+    .cfg dl > dt:first-child + dd { border-top: 0; }
+    .kill-row { grid-template-columns: 1fr; gap: 4px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <strong>Canal Suporte TOTVS</strong>
+      <span>proposta de reestruturação</span>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Visualizações">
+      <button role="tab" id="tab-dash" aria-controls="p-dash" aria-selected="true">Dashboard proposto</button>
+      <button role="tab" id="tab-guide" aria-controls="p-guide" aria-selected="false">Guia de implementação</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <!-- ================= DASHBOARD ================= -->
+  <section id="p-dash" role="tabpanel" aria-labelledby="tab-dash">
+
+    <div class="note">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.6v4.2M8 11.2v.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <div><b>Dados reais</b> da aba <span class="mono">Respostas do formulário</span>, lidos em 09/09/2026 18h28. São as 9 solicitações que existem nessa base — ela começou em 02/09. O histórico anterior (70 solicitações desde 25/06) está na planilha antiga e não tem coluna de status, por isso não entra aqui. Os quatro filtros acima funcionam sobre esses registros — tudo na página recalcula.</div>
+    </div>
+
+    <div class="filters">
+      <div class="ctl range">
+        <span class="k">Período</span>
+        <input type="date" id="f-from" aria-label="Data inicial" min="2026-09-02" max="2026-09-09" value="2026-09-02">
+        <span class="dash">–</span>
+        <input type="date" id="f-to" aria-label="Data final" min="2026-09-02" max="2026-09-09" value="2026-09-09">
+      </div>
+      <div class="ctl">
+        <span class="k">Status</span>
+        <select id="f-status" aria-label="Status"><option value="">Todos</option></select>
+      </div>
+      <div class="ctl">
+        <span class="k">Motivo</span>
+        <select id="f-motivo" aria-label="Motivo de contato"><option value="">Todos</option></select>
+      </div>
+      <div class="ctl">
+        <span class="k">Departamento</span>
+        <select id="f-depto" aria-label="Departamento solicitante"><option value="">Todos</option></select>
+      </div>
+    </div>
+
+    <div class="filterbar">
+      <span class="count" id="f-count"></span>
+      <button class="clearbtn" id="f-clear" type="button">Limpar filtros</button>
+    </div
+    </div>
+
+    <div class="kpis">
+      <div class="tile">
+        <span class="lbl">Solicitações no período</span>
+        <span class="val" id="k-total">9</span>
+        <span class="delta"><span class="ref" id="k-span">02/09 a 09/09</span></span>
+      </div>
+      <div class="tile">
+        <span class="lbl">Concluídas</span>
+        <span class="val" id="k-done">6</span>
+        <span class="delta"><span class="ref">status preenchido</span></span>
+      </div>
+      <div class="tile">
+        <span class="lbl">Em aberto</span>
+        <span class="val" id="k-open">3</span>
+        <span class="delta"><span class="ref">tudo que não foi concluído</span></span>
+      </div>
+      <div class="tile">
+        <span class="lbl">Taxa de conclusão</span>
+        <span class="val" id="k-rate">67<small>%</small></span>
+        <span class="delta"><span class="ref" id="k-frac">6 de 9</span></span>
+      </div>
+      <div class="tile">
+        <span class="lbl">Tempo médio de resolução</span>
+        <span class="val" style="color:var(--ink-3)">—</span>
+        <span class="chip warn">falta data de conclusão</span>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <div class="card span12">
+        <div class="card-head">
+          <div>
+            <h3>Volume diário por status</h3>
+            <div class="sub">Solicitações abertas por dia · 02/09 – 09/09/2026</div>
+          </div>
+          <div class="right">
+            <div class="legend">
+              <span><i class="swatch" style="background:var(--s1)"></i>Concluída</span>
+              <span><i class="swatch" style="background:var(--s2)"></i>Em aberto</span>
+            </div>
+            <button class="tbtn" data-toggle="t-daily">Tabela</button>
+          </div>
+        </div>
+        <div class="plot" id="c-daily"></div>
+        <div class="tblwrap" id="t-daily" hidden></div>
+        <p class="why"><b>Substitui 4 gráficos.</b> Os painéis de Data, MoM, Dia da Semana e WoW mostravam a mesma dupla de séries em quatro cortes. Um só eixo de tempo com o controle de granularidade no filtro entrega os quatro.</p>
+      </div>
+
+      <div class="card span7">
+        <div class="card-head">
+          <div>
+            <h3>Taxa de conclusão por semana</h3>
+            <div class="sub">Concluídas ÷ total de solicitações da semana</div>
+          </div>
+          <div class="right"><button class="tbtn" data-toggle="t-rate">Tabela</button></div>
+        </div>
+        <div class="plot" id="c-rate"></div>
+        <div class="tblwrap" id="t-rate" hidden></div>
+        <p class="why"><b>Gráfico separado, de propósito.</b> Volume e percentual têm escalas diferentes — juntá-los em eixo secundário inventa uma correlação que não está no dado. Dois gráficos, um eixo cada.</p>
+      </div>
+
+      <div class="card span5">
+        <div class="card-head">
+          <div>
+            <h3>Aging dos pendentes</h3>
+            <div class="sub">3 em aberto por tempo desde a abertura</div>
+          </div>
+          <div class="right"><button class="tbtn" data-toggle="t-aging">Tabela</button></div>
+        </div>
+        <div class="plot" id="c-aging"></div>
+        <div class="tblwrap" id="t-aging" hidden></div>
+        <p class="why"><b>Novo.</b> "22 pendentes" não diz se é fila saudável ou dívida acumulada. A faixa de aging diz.</p>
+      </div>
+
+      <div class="card span6">
+        <div class="card-head">
+          <div>
+            <h3>Motivo de contato</h3>
+            <div class="sub">Solicitações por motivo declarado no formulário</div>
+          </div>
+          <div class="right"><button class="tbtn" data-toggle="t-motivo">Tabela</button></div>
+        </div>
+        <div class="plot" id="c-motivo"></div>
+        <div class="tblwrap" id="t-motivo" hidden></div>
+        <p class="why"><b>Substitui o treemap.</b> Barra ordenada cabe o nome inteiro e deixa comparar as fatias — o treemap cortava "Dúvidas fornec…".</p>
+      </div>
+
+      <div class="card span6">
+        <div class="card-head">
+          <div>
+            <h3>Departamento solicitante</h3>
+            <div class="sub">Solicitações por área que abriu o pedido</div>
+          </div>
+          <div class="right"><button class="tbtn" data-toggle="t-depto">Tabela</button></div>
+        </div>
+        <div class="plot" id="c-depto"></div>
+        <div class="tblwrap" id="t-depto" hidden></div>
+        <p class="why"><b>Mesma forma do gráfico ao lado.</b> Dois rankings lado a lado só se comparam se tiverem a mesma escala visual e a mesma cor.</p>
+      </div>
+
+      <div class="card span12">
+        <div class="card-head">
+          <div>
+            <h3>Detalhe operacional</h3>
+            <div class="sub">As 9 solicitações da base · ordenado por data ↓</div>
+          </div>
+        </div>
+        <div class="tblwrap" id="t-detail"></div>
+        <p class="why"><b>Substitui "Descritivo da Solicitação".</b> A tabela antiga tinha uma coluna só, sem protocolo, data nem status — não dava para agir a partir dela.</p>
+      </div>
+
+    </div>
+
+    <footer>
+      Paleta: âmbar <span class="mono">#F5C518</span> (concluída) e vermelho <span class="mono">#E5484D</span> (pendente) — a mesma travada no tema do relatório. Fonte: <span class="mono">Solicitar ajuda — Respostas</span> (Google Sheets) · Leitura de 09/09/2026 18h28 · Números conferem com o relatório no Looker Studio.
+    </footer>
+  </section>
+
+  <!-- ================= GUIDE ================= -->
+  <section id="p-guide" role="tabpanel" aria-labelledby="tab-guide" hidden>
+    <div class="guide">
+      <div class="eyebrow">Execução no Looker Studio</div>
+      <h2>De 11 componentes para 8, na ordem certa</h2>
+      <p>A ordem importa: tema e campos calculados antes dos gráficos, senão você reconfigura cor e métrica em cada componente. Os nomes de campo abaixo são os que estão na sua fonte <span class="mono">Solicitar ajuda — Respostas</span>.</p>
+
+      <div class="sec">
+        <div class="sec-hd">
+          <h3>Antes de tudo: falta uma coluna na planilha</h3>
+        </div>
+        <p style="color:var(--ink-2); font-size:14px; margin:0 0 12px">Três dos cinco KPIs propostos — tempo médio de resolução, aging e SLA — dependem de saber <b>quando</b> a solicitação foi concluída. Isso não existe na fonte hoje: há <code>DATA</code> (abertura) e <code>Status</code>, mas nenhuma data de fechamento. Sem ela, o painel fica só com contagem.</p>
+        <ul class="plain">
+          <li>Adicione <code>DATA CONCLUSÃO</code> na planilha de respostas, preenchida quando o status vira <i>Solicitação Concluída</i>. Se o fluxo é manual, um <b>Apps Script <code>onEdit</code></b> que estampa <code>new Date()</code> na linha resolve e evita esquecimento.</li>
+          <li>Trave <code>Status</code> numa <b>lista de validação</b> com exatamente dois valores. Hoje o risco é aparecer "Concluída" e "Solicitação Concluída" como categorias diferentes e quebrar todo gráfico.</li>
+          <li>Apague as colunas auxiliares <code>MÊS</code>, <code>SEMANA</code> e <code>DIA DA SEMANA</code>. O Looker deriva mês, semana ISO e dia da semana de <code>DATA</code> nativamente — mantê-las como texto só duplica dimensão e foi o que gerou os cinco filtros de tempo.</li>
+          <li><code>PERÍODO</code> e <code>DATA</code> são os dois campos de data da fonte. Defina <b>um</b> como dimensão de data padrão da fonte (Editar fonte → coluna "Período padrão") e use só ele.</li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-hd">
+          <h3>Consertar as colunas auxiliares da planilha</h3>
+        </div>
+        <p style="color:var(--ink-2); font-size:14px; margin:0 0 12px">As colunas <code>MÊS</code>, <code>DATA</code>, <code>SEMANA</code>, <code>PERÍODO</code> e <code>DIA DA SEMANA</code> não são fórmula — são arrasto manual, e pararam na linha 8. As duas solicitações de 09/09 chegaram sem elas e sem <code>Status</code>: é daí que vem a série <code>null</code> no gráfico e a linha com data vazia na tabela. Trocar por <code>ARRAYFORMULA</code> resolve de uma vez, porque passa a preencher cada resposta nova sozinha.</p>
+        <p style="color:var(--ink-2); font-size:14px; margin:0 0 12px">A raiz do problema é que <code>Data e hora</code> chega como <b>texto</b> (<span class="mono">"2 de set., 2026 19h42min01s"</span>), não como data — nem o Looker nem uma fórmula simples leem isso. Por isso <code>DATA</code> precisa ser derivada com <code>REGEXEXTRACT</code>. Todas as outras saem dela.</p>
+        <p style="color:var(--ink-2); font-size:14px; margin:0 0 12px"><b>Antes de colar:</b> apague os valores manuais de <code>J2:N</code> (as cinco colunas), senão a fórmula devolve <span class="mono">#REF!</span>. Depois cole cada uma na <b>linha 2</b> da coluna correspondente.</p>
+        <pre><code>K2 — DATA (a única que faz o parse; as outras dependem dela)
+=ARRAYFORMULA(IF(G2:G="";"";IFERROR(DATE(
+   VALUE(REGEXEXTRACT(G2:G;", (\d{4})"));
+   MATCH(REGEXEXTRACT(G2:G;" de (\w{3})");
+         {"jan";"fev";"mar";"abr";"mai";"jun";
+          "jul";"ago";"set";"out";"nov";"dez"};0);
+   VALUE(REGEXEXTRACT(G2:G;"^(\d+)"))
+ );"")))
+
+J2 — MÊS
+=ARRAYFORMULA(IF(K2:K="";"";TEXT(K2:K;"mmmm")))
+
+L2 — SEMANA  (semana ISO; confere com a sua tabela-calendário)
+=ARRAYFORMULA(IF(K2:K="";"";ISOWEEKNUM(K2:K)))
+
+M2 — PERÍODO  (segunda a domingo, como você já usa)
+=ARRAYFORMULA(IF(K2:K="";"";
+   TEXT(K2:K-WEEKDAY(K2:K;2)+1;"dd/mm/yyyy")&" - "&
+   TEXT(K2:K-WEEKDAY(K2:K;2)+7;"dd/mm/yyyy")))
+
+N2 — DIA DA SEMANA
+=ARRAYFORMULA(IF(K2:K="";"";TEXT(K2:K;"dddd")))</code></pre>
+        <p style="color:var(--ink-3); font-size:13px; margin:10px 0 0">Notas de locale: o separador de argumentos é <code>;</code> em planilha pt-BR (se a sua estiver em inglês, troque por <code>,</code> e o <code>{"jan";…}</code> por <code>{"jan"\;…}</code>). Se <code>"yyyy"</code> não pegar, use <code>"aaaa"</code>. Com <code>ISOWEEKNUM</code> no lugar do <code>PROCV</code>, a aba-calendário deixa de ser necessária para essas colunas.</p>
+        <p style="color:var(--ink-2); font-size:14px; margin:12px 0 0"><b>E trave o <code>Status</code>:</b> selecione <code>I2:I</code> → Dados → Validação de dados → Lista de itens, com exatamente <span class="mono">Solicitação Concluída</span> e <span class="mono">Pendente</span>. É o que evita "Concluída" e "Solicitação Concluída" virarem duas categorias e quebrarem os quatro KPIs de uma vez.</p>
+      </div>
+
+      <div class="sec">
+        <div class="sec-hd">
+          <h3>Campos calculados a criar na fonte</h3>
+        </div>
+        <p style="color:var(--ink-2); font-size:14px; margin:0 0 4px">Crie na <b>fonte de dados</b>, não no gráfico — assim ficam reutilizáveis em todos os componentes.</p>
+        <pre><code>-- Em aberto  (tudo que não foi concluído, inclusive sem status)
+SUM(CASE WHEN Status = "Solicitação Concluída" THEN 0 ELSE 1 END)
+
+-- Taxa de conclusão  (formato: Percent(0) — veja a nota do 100 *)
+100 * SUM(CASE WHEN Status = "Solicitação Concluída" THEN 1 ELSE 0 END)
+    / SUM(CASE WHEN Status IS NULL THEN 1 ELSE 1 END)
+
+-- TMR em dias  (média = tempo médio de resolução)
+DATE_DIFF(DATA CONCLUSÃO, DATA)
+
+-- Aging em dias  (só faz sentido para pendentes)
+DATE_DIFF(CURRENT_DATE(), DATA)
+
+-- Faixa de aging  -- o prefixo numérico é o que ordena
+CASE
+  WHEN Status != "Pendente" THEN NULL
+  WHEN DATE_DIFF(CURRENT_DATE(), DATA) &lt;= 1 THEN "1. 0–1 dia"
+  WHEN DATE_DIFF(CURRENT_DATE(), DATA) &lt;= 3 THEN "2. 2–3 dias"
+  WHEN DATE_DIFF(CURRENT_DATE(), DATA) &lt;= 7 THEN "3. 4–7 dias"
+  ELSE "4. &gt; 7 dias"
+END</code></pre>
+        <p style="color:var(--ink-2); font-size:14px; margin:10px 0 0"><b>Dois detalhes que quebram a faixa de KPIs se você errar.</b> O denominador tem que ser <i>todas</i> as linhas — é o que <code>SUM(CASE WHEN Status IS NULL THEN 1 ELSE 1 END)</code> faz, porque devolve 1 para cada registro. Se você usar <code>COUNT(protocolo)</code> ou deixar os nulos fora, "concluídas + em aberto" deixa de somar o total e o painel passa a esconder solicitações. E "em aberto" precisa contar quem está sem status: uma solicitação sem status não foi concluída, então ela está aberta.</p>
+        <p style="color:var(--ink-2); font-size:14px; margin:10px 0 0">O <code>100 *</code> é necessário porque o formato <b>Percent</b> do Looker só acrescenta o símbolo — ele não multiplica. Sem isso, 0,67 aparece como "1%".</p>
+        <p style="color:var(--ink-3); font-size:13px; margin:10px 0 0">O prefixo <code>1.</code> / <code>2.</code> não é enfeite: o Looker ordena saída de <code>CASE</code> alfabeticamente, então sem ele "0–1 dia" cai depois de "> 7 dias".</p>
+      </div>
+
+      <div class="sec">
+        <div class="sec-hd">
+          <h3>Passo a passo</h3>
+        </div>
+        <ol class="steps">
+
+          <li>
+            <h4>Duplique o relatório antes de mexer</h4>
+            <p><b>Arquivo → Fazer uma cópia.</b> Renomeie para <span class="mono">Canal Suporte TOTVS — v2</span> e trabalhe na cópia. O relatório atual já é compartilhado; você não quer que o comitê abra no meio da reforma.</p>
+          </li>
+
+          <li>
+            <h4>Trave as cores de status no tema, não nos gráficos</h4>
+            <p><b>Tema e layout → Personalizar → Cores por valor de dimensão.</b> Mapeie <code>Status</code> uma única vez e todo componente novo já nasce com a cor certa.</p>
+            <div class="cfg"><dl>
+              <dt>Pendente</dt><dd><span class="dot" style="background:var(--s2)"></span><span class="mono">#EB6834</span> — laranja, a cor que pede ação</dd>
+              <dt>Concluída</dt><dd><span class="dot" style="background:var(--s1)"></span><span class="mono">#2A78D6</span> — azul, informação em repouso</dd>
+            </dl></div>
+            <p style="margin-top:10px">Hoje está invertido: concluída em amarelo vivo e pendente em cinza apagado, ou seja, o olho vai justamente para o que não precisa de nada. O par azul/laranja também é seguro para daltonismo — cinza vs. amarelo não é.</p>
+          </li>
+
+          <li>
+            <h4>Exclua os componentes redundantes</h4>
+            <p>Antes de criar qualquer coisa, tire o que vai sair. Sobra espaço e você para de mover gráfico velho pela tela.</p>
+            <div class="kill">
+              <div class="kill-row"><span class="from">Barras por Data · MoM · Dia da Semana · WoW</span><span class="arr">→</span><span class="to">1 gráfico de colunas empilhadas</span></div>
+              <div class="kill-row"><span class="from">Barras de Status Solicitações</span><span class="arr">→</span><span class="to">absorvido pelos scorecards</span></div>
+              <div class="kill-row"><span class="from">Treemap Solicitante · Treemap Departamento</span><span class="arr">→</span><span class="to">2 gráficos de barras horizontais</span></div>
+              <div class="kill-row"><span class="from">Os 2 scorecards gigantes sem rótulo</span><span class="arr">→</span><span class="to">faixa de 5 KPIs rotulados</span></div>
+            </div>
+          </li>
+
+          <li>
+            <h4>Reduza de 11 filtros para 4 no topo</h4>
+            <p>Mantenha na tela apenas <b>Período</b>, <b>Status</b>, <b>Motivo de contato?</b> e <b>Departamento Solicitante?</b>. Os outros sete vão para a barra de filtros lateral, que é colapsável: <b>Arquivo → Configurações do relatório → Mostrar barra de filtros</b>.</p>
+            <p>Data, MÊS, SEMANA, DIA DA SEMANA e PERÍODO são cinco controles para a mesma dimensão. Um controle de intervalo de datas com comparação substitui os cinco.</p>
+            <p><b>E o de período tem que ser do tipo certo.</b> O controle que estava lá era uma <i>lista suspensa</i> sobre a coluna <code>PERÍODO</code> — e essa coluna é texto (<span class="mono">"31/08/2026 - 06/09/2026"</span>) que o Looker interpretou como data. O resultado eram opções inventadas: "13 de set. de 2026", "9 de jun. de 2026" e "null". Filtrar por ali não devolvia nada coerente.</p>
+            <p>O certo é <b>Adicionar um controle → Controle de período</b>, que abre um calendário de intervalo e filtra sobre <code>DATA</code>. Se quiser evitar que o Looker volte a inventar datas, mude o tipo de <code>PERÍODO</code> para <b>Texto</b> na fonte — mas lembre que a fonte é compartilhada com o relatório original.</p>
+          </li>
+
+          <li>
+            <h4>Faixa de KPIs: 5 scorecards com comparação</h4>
+            <p>Todos com <b>Dados → Período de comparação → Período anterior</b> e <b>Estilo → Mostrar comparação como → Diferença percentual</b> (exceto os dois de contagem absoluta, onde diferença bruta lê melhor).</p>
+            <div class="cfg"><dl>
+              <dt>Solicitações</dt><dd><code>Record Count</code> — rótulo "Solicitações no período"</dd>
+              <dt>Pendentes</dt><dd><code>SUM(Pendente?)</code> — comparação em diferença bruta</dd>
+              <dt>Taxa de conclusão</dt><dd><code>Taxa de conclusão</code> — formato percentual, 1 decimal</dd>
+              <dt>TMR</dt><dd><code>AVG(TMR em dias)</code> — 1 decimal, sufixo " d"</dd>
+              <dt>Fora do SLA</dt><dd><code>SUM(Pendente?)</code> com filtro <code>Aging em dias &gt; 3</code> no componente</dd>
+            </dl></div>
+            <p style="margin-top:10px">O rótulo é obrigatório. Hoje são dois números soltos — "3" e "1" — e ninguém que abre o relatório sabe o que eles contam.</p>
+          </li>
+
+          <li>
+            <h4>Gráfico principal: colunas empilhadas por dia</h4>
+            <div class="cfg"><dl>
+              <dt>Tipo</dt><dd>Gráfico de colunas empilhadas</dd>
+              <dt>Dimensão</dt><dd><code>DATA</code> · granularidade <b>Dia</b></dd>
+              <dt>Detalhamento</dt><dd><code>Status</code></dd>
+              <dt>Métrica</dt><dd><code>Record Count</code></dd>
+              <dt>Ordenar</dt><dd><code>DATA</code> crescente</dd>
+              <dt>Estilo</dt><dd>Legenda no topo · sem rótulos de dados nas pilhas · grade de eixo em cinza claro · eixo Y começando em 0</dd>
+            </dl></div>
+            <p style="margin-top:10px">Adicione ao lado um <b>controle de granularidade</b> (Adicionar um controle → Lista suspensa sobre a dimensão de data) para o leitor escolher dia, semana ou mês. É isso que aposenta o MoM e o WoW.</p>
+          </li>
+
+          <li>
+            <h4>Taxa de conclusão: gráfico próprio, nunca eixo secundário</h4>
+            <div class="cfg"><dl>
+              <dt>Tipo</dt><dd>Gráfico de linhas</dd>
+              <dt>Dimensão</dt><dd><code>DATA</code> · granularidade <b>Semana ISO</b></dd>
+              <dt>Métrica</dt><dd><code>Taxa de conclusão</code></dd>
+              <dt>Estilo</dt><dd>1 série (sem legenda) · pontos visíveis · eixo Y de 0 a 100% fixo</dd>
+            </dl></div>
+            <p style="margin-top:10px">A tentação é jogar a linha no eixo secundário do gráfico de volume. Não faça: as duas escalas são arbitrárias uma em relação à outra e o gráfico passa a sugerir correlação que o dado não tem. Fixar o eixo em 0–100% também evita que uma variação de 2 p.p. pareça um desabamento.</p>
+          </li>
+
+          <li>
+            <h4>Motivo e Departamento: barras horizontais idênticas</h4>
+            <div class="cfg"><dl>
+              <dt>Tipo</dt><dd>Gráfico de barras, orientação horizontal</dd>
+              <dt>Dimensão</dt><dd><code>Motivo de contato?</code> / <code>Departamento Solicitante?</code></dd>
+              <dt>Métrica</dt><dd><code>Record Count</code></dd>
+              <dt>Ordenar</dt><dd><code>Record Count</code> decrescente</dd>
+              <dt>Linhas</dt><dd>6 + <b>Mostrar "Outros"</b> ativado</dd>
+              <dt>Estilo</dt><dd>Série única em <span class="mono">#2A78D6</span> · rótulos de dados ativados · sem eixo X</dd>
+            </dl></div>
+            <p style="margin-top:10px">Série única quer dizer <b>uma cor para todas as barras</b>. Não pinte cada barra de uma cor nem faça degradê por tamanho: o comprimento já diz quem é maior, e colorir por ranking faz a cor mudar de dono quando alguém filtra.</p>
+          </li>
+
+          <li>
+            <h4>Aging dos pendentes</h4>
+            <div class="cfg"><dl>
+              <dt>Tipo</dt><dd>Gráfico de barras horizontais</dd>
+              <dt>Dimensão</dt><dd><code>Faixa de aging</code></dd>
+              <dt>Métrica</dt><dd><code>Record Count</code></dd>
+              <dt>Ordenar</dt><dd><code>Faixa de aging</code> crescente (é o prefixo numérico agindo)</dd>
+              <dt>Estilo</dt><dd>Tons de azul do claro ao escuro conforme a faixa envelhece</dd>
+            </dl></div>
+            <p style="margin-top:10px">Aqui a escala de cor é legítima, porque as faixas <i>têm</i> ordem natural. Nos gráficos de motivo e departamento não têm — por isso lá é cor única.</p>
+          </li>
+
+          <li>
+            <h4>Tabela de detalhe operacional</h4>
+            <div class="cfg"><dl>
+              <dt>Colunas</dt><dd><code>protocolo</code> · <code>DATA</code> · <code>Motivo de contato?</code> · <code>Departamento Solicitante?</code> · <code>Quem enviou</code> · <code>Status</code> · <code>Aging em dias</code></dd>
+              <dt>Ordenar</dt><dd><code>DATA</code> decrescente</dd>
+              <dt>Estilo</dt><dd>Cabeçalho fixo · paginação 10 linhas · <b>Barra de rolagem</b> ativada</dd>
+            </dl></div>
+            <p style="margin-top:10px">Deixe <code>Descreva brevemente o problema</code> fora das colunas fixas — texto longo estoura a linha. Ele aparece no detalhamento ao clicar, ou numa segunda página de consulta.</p>
+          </li>
+
+          <li>
+            <h4>Cabeçalho com o período em análise</h4>
+            <p>O Looker não tem texto dinâmico. O contorno que funciona no PDF: dois scorecards discretos lado a lado no cabeçalho, <code>Mín(DATA)</code> e <code>Máx(DATA)</code>, sem rótulo e sem borda. Sem isso, todo print sai sem dizer de que período ele fala.</p>
+          </li>
+
+          <li>
+            <h4>Verificação antes de compartilhar</h4>
+            <ul class="plain">
+              <li>Exporte em PDF e confira se nenhum rótulo cortou — é assim que o comitê vai ler.</li>
+              <li>Filtre por um único departamento e confirme que <b>as cores não trocaram de dono</b> em nenhum gráfico.</li>
+              <li>Zere o filtro de período para uma faixa sem dados e veja se os componentes mostram estado vazio em vez de erro.</li>
+              <li>Abra num monitor de 13" — o layout de 12 colunas tem que continuar legível.</li>
+            </ul>
+          </li>
+
+        </ol>
+      </div>
+
+      <div class="sec">
+        <div class="sec-hd">
+          <h3>Uma ressalva honesta sobre o timing</h3>
+        </div>
+        <p style="color:var(--ink-2); font-size:14px; margin:0">Com 4 registros na base, os gráficos de tendência não têm o que mostrar — e nenhuma reforma visual resolve isso. Se a reforma completa parece cara agora, o subconjunto que já paga sozinho é: <b>faixa de KPIs rotulada</b> (passo 5), <b>cores de status corrigidas</b> (passo 2) e <b>filtros reduzidos a 4</b> (passo 4). Os gráficos de tendência podem esperar as primeiras quatro semanas de volume real — a partir daí a leitura semanal começa a significar algo, e a coluna <code>DATA CONCLUSÃO</code> precisa estar rodando desde já para que o histórico exista quando você for olhar.</p>
+      </div>
+
+      <footer>
+        Referências de campo conferidas na fonte <span class="mono">Solicitar ajuda — Respostas</span> do relatório <span class="mono">Canal - Suporte Totvs</span> em 09/09/2026.
+      </footer>
+    </div>
+  </section>
+</main>
+
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= dados reais (9 registros, leitura 09/09/2026 18h28) ================= */
+  var TODAY = "2026-09-09";
+  var ROWS = [
+    { prot: null,         data: "2026-09-02", motivo: "Dúvidas fornecedor e produto", depto: "Jurídico",         quem: "Henrique Amorim Guarnieri", status: "Concluída" },
+    { prot: null,         data: "2026-09-03", motivo: "Acessos",                      depto: "Jurídico",         quem: "Henrique Amorim Guarnieri", status: "Concluída" },
+    { prot: null,         data: "2026-09-03", motivo: "Dúvidas fornecedor e produto", depto: "Compras",          quem: "David Casal Barbosa",       status: "Concluída" },
+    { prot: "1788790123", data: "2026-09-07", motivo: "Sugestões",                    depto: "Jurídico",         quem: "Diego Albuquerque",         status: "Concluída" },
+    { prot: "1788807270", data: "2026-09-07", motivo: "Sugestões",                    depto: "Jurídico",         quem: "Diego Albuquerque",         status: "Concluída" },
+    { prot: "1788816621", data: "2026-09-07", motivo: "Sugestões",                    depto: "Marketing",        quem: "Diego Albuquerque",         status: "Concluída" },
+    { prot: "1788877714", data: "2026-09-08", motivo: "Sugestões",                    depto: "Jurídico",         quem: "Diego Albuquerque",         status: "Pendente"  },
+    { prot: "1788963338", data: "2026-09-09", motivo: "Dúvidas fornecedor e produto", depto: "Recursos Humanos", quem: "Fernanda Serrador Eusebio", status: "Pendente"  },
+    { prot: "1788976984", data: "2026-09-09", motivo: "Dúvidas fornecedor e produto", depto: "Compras",          quem: "Jonathan Ferreira Martins", status: "Pendente"  }
+  ];
+  var DONE = "Concluída";
+
+  /* ================= helpers ================= */
+  function NF(n, d) {
+    return Number(n).toLocaleString("pt-BR", { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 });
+  }
+  function esc(v) {
+    return String(v).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+  function ymd(s) { var a = s.split("-"); return new Date(+a[0], +a[1] - 1, +a[2]); }
+  function brShort(s) { var a = s.split("-"); return a[2] + "/" + a[1]; }
+  function brFull(s) { var a = s.split("-"); return a[2] + "/" + a[1] + "/" + a[0]; }
+  function daysBetween(a, b) { return Math.round((ymd(b) - ymd(a)) / 86400000); }
+  function isoWeek(s) {
+    var d = ymd(s);
+    var t = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    var dow = (t.getDay() + 6) % 7;           // 0 = segunda
+    t.setDate(t.getDate() - dow + 3);          // quinta da semana ISO
+    var firstThu = new Date(t.getFullYear(), 0, 4);
+    var fDow = (firstThu.getDay() + 6) % 7;
+    firstThu.setDate(firstThu.getDate() - fDow + 3);
+    return 1 + Math.round((t - firstThu) / (7 * 86400000));
+  }
+  var isOpen = function (r) { return r.status !== DONE; };
+
+  /* ================= tooltip ================= */
+  var tip = document.getElementById("tip");
+  function showTip(html, ev) {
+    tip.innerHTML = html;
+    tip.style.opacity = "1";
+    var r = tip.getBoundingClientRect();
+    var x = ev.clientX + 14, y = ev.clientY - r.height / 2;
+    if (x + r.width > window.innerWidth - 8) x = ev.clientX - r.width - 14;
+    if (y < 8) y = 8;
+    if (y + r.height > window.innerHeight - 8) y = window.innerHeight - r.height - 8;
+    tip.style.left = x + "px";
+    tip.style.top = y + "px";
+  }
+  function hideTip() { tip.style.opacity = "0"; }
+  function bindTip(el, html) {
+    el.addEventListener("mousemove", function (ev) { showTip(html, ev); });
+    el.addEventListener("mouseleave", hideTip);
+    el.setAttribute("tabindex", "0");
+    el.addEventListener("focus", function () {
+      tip.innerHTML = html; tip.style.opacity = "1";
+      var b = el.getBoundingClientRect(), r = tip.getBoundingClientRect();
+      tip.style.left = Math.min(b.right + 10, window.innerWidth - r.width - 8) + "px";
+      tip.style.top = Math.max(8, b.top) + "px";
+    });
+    el.addEventListener("blur", hideTip);
+  }
+  function tipRow(color, name, value) {
+    return '<div class="t-row"><span class="dot" style="background:' + color + '"></span>' +
+      esc(name) + '<span class="t-v">' + value + "</span></div>";
+  }
+
+  /* ================= svg ================= */
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function svgEl(tag, attrs) {
+    var e = document.createElementNS(SVGNS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function topRoundPath(x, y, w, h, r) {
+    r = Math.min(r, w / 2, h);
+    return "M" + x + "," + (y + h) + "L" + x + "," + (y + r) +
+      "Q" + x + "," + y + " " + (x + r) + "," + y +
+      "L" + (x + w - r) + "," + y +
+      "Q" + (x + w) + "," + y + " " + (x + w) + "," + (y + r) +
+      "L" + (x + w) + "," + (y + h) + "Z";
+  }
+  function rightRoundPath(x, y, w, h, r) {
+    r = Math.min(r, w, h / 2);
+    return "M" + x + "," + y + "L" + (x + w - r) + "," + y +
+      "Q" + (x + w) + "," + y + " " + (x + w) + "," + (y + r) +
+      "L" + (x + w) + "," + (y + h - r) +
+      "Q" + (x + w) + "," + (y + h) + " " + (x + w - r) + "," + (y + h) +
+      "L" + x + "," + (y + h) + "Z";
+  }
+  function axisText(x, y, str, anchor, size, color) {
+    var t = svgEl("text", {
+      x: x, y: y, "text-anchor": anchor || "middle",
+      "font-size": size || 10.5, fill: "var(--" + (color || "ink-3") + ")"
+    });
+    t.textContent = str;
+    return t;
+  }
+  function niceMax(v) {
+    if (v <= 4) return 4;
+    if (v <= 8) return 8;
+    if (v <= 10) return 10;
+    return Math.ceil(v / 5) * 5;
+  }
+  function mount(id) { var el = document.getElementById(id); el.innerHTML = ""; return el; }
+  function emptyInto(id, msg) {
+    var el = mount(id);
+    var d = document.createElement("div");
+    d.className = "empty"; d.textContent = msg || "Nenhuma solicitação nesse filtro.";
+    el.appendChild(d);
+  }
+
+  /* ================= agregações ================= */
+  function byDay(rows) {
+    var map = {}, order = [];
+    rows.forEach(function (r) {
+      if (!map[r.data]) { map[r.data] = { done: 0, open: 0 }; order.push(r.data); }
+      if (isOpen(r)) map[r.data].open++; else map[r.data].done++;
+    });
+    order.sort();
+    return order.map(function (d) { return [brShort(d), map[d].done, map[d].open]; });
+  }
+  function byWeek(rows) {
+    var map = {}, order = [];
+    rows.forEach(function (r) {
+      var w = isoWeek(r.data);
+      if (!map[w]) { map[w] = { total: 0, done: 0, hasToday: false }; order.push(w); }
+      map[w].total++;
+      if (!isOpen(r)) map[w].done++;
+      if (isoWeek(TODAY) === w) map[w].hasToday = true;
+    });
+    order.sort(function (a, b) { return a - b; });
+    return order.map(function (w) {
+      return ["Sem " + w + (map[w].hasToday ? "*" : ""), map[w].total ? (100 * map[w].done / map[w].total) : 0];
+    });
+  }
+  function agingBuckets(rows) {
+    var b = [0, 0, 0, 0];
+    rows.filter(isOpen).forEach(function (r) {
+      var d = daysBetween(r.data, TODAY);
+      if (d <= 1) b[0]++; else if (d <= 3) b[1]++; else if (d <= 7) b[2]++; else b[3]++;
+    });
+    return [["0–1 dia", b[0]], ["2–3 dias", b[1]], ["4–7 dias", b[2]], ["> 7 dias", b[3]]];
+  }
+  function countBy(rows, key) {
+    var map = {};
+    rows.forEach(function (r) { map[r[key]] = (map[r[key]] || 0) + 1; });
+    return Object.keys(map).map(function (k) { return [k, map[k]]; })
+      .sort(function (a, b) { return b[1] - a[1] || a[0].localeCompare(b[0], "pt-BR"); });
+  }
+
+  /* ================= gráficos ================= */
+  function drawDaily(rows) {
+    var data = byDay(rows);
+    if (!data.length) { emptyInto("c-daily"); document.getElementById("t-daily").innerHTML = ""; return; }
+    var W = 1080, H = 274, L = 40, R = 8, T = 14, B = 34;
+    var pw = W - L - R, ph = H - T - B;
+    var yMax = niceMax(Math.max.apply(null, data.map(function (d) { return d[1] + d[2]; })));
+    var step = yMax / 4, ticks = [0, step, step * 2, step * 3, yMax];
+    var band = pw / data.length, barW = Math.min(24, Math.max(6, band - 22));
+    var svg = svgEl("svg", { viewBox: "0 0 " + W + " " + H, role: "img",
+      "aria-label": "Colunas empilhadas do volume diário por status" });
+
+    ticks.forEach(function (t) {
+      var y = T + ph - (t / yMax) * ph;
+      svg.appendChild(svgEl("line", { x1: L, x2: L + pw, y1: y, y2: y, stroke: "var(--grid)", "stroke-width": 1 }));
+      svg.appendChild(axisText(L - 9, y + 3.5, NF(t), "end"));
+    });
+    svg.appendChild(svgEl("line", { x1: L, x2: L + pw, y1: T + ph, y2: T + ph, stroke: "var(--axis)", "stroke-width": 1 }));
+
+    data.forEach(function (d, i) {
+      var label = d[0], done = d[1], open = d[2], total = done + open;
+      var x = L + i * band + (band - barW) / 2;
+      var hDone = (done / yMax) * ph, hOpen = (open / yMax) * ph;
+      var yDone = T + ph - hDone;
+      var gap = (open > 0 && done > 0) ? 2 : 0;
+      var yOpen = yDone - hOpen - gap;
+      if (done > 0) {
+        svg.appendChild(svgEl("path", {
+          d: open > 0 ? "M" + x + "," + yDone + "h" + barW + "v" + hDone + "h" + (-barW) + "Z"
+                      : topRoundPath(x, yDone, barW, hDone, 4),
+          fill: "var(--s1)"
+        }));
+      }
+      if (open > 0) svg.appendChild(svgEl("path", { d: topRoundPath(x, yOpen, barW, hOpen, 4), fill: "var(--s2)" }));
+      svg.appendChild(axisText(L + i * band + band / 2, T + ph + 17, label, "middle", 10));
+      var hit = svgEl("rect", { x: L + i * band, y: T, width: band, height: ph, class: "hit" });
+      bindTip(hit, '<div class="t-title">' + esc(label) + " · total " + total + "</div>" +
+        tipRow("var(--s1)", "Concluída", NF(done)) + tipRow("var(--s2)", "Em aberto", NF(open)));
+      svg.appendChild(hit);
+    });
+    mount("c-daily").appendChild(svg);
+
+    document.getElementById("t-daily").innerHTML =
+      "<table><thead><tr><th>Dia</th><th class='num'>Concluída</th><th class='num'>Em aberto</th><th class='num'>Total</th></tr></thead><tbody>" +
+      data.map(function (d) {
+        return "<tr><td class='mono'>" + d[0] + "</td><td class='num'>" + d[1] +
+          "</td><td class='num'>" + d[2] + "</td><td class='num'>" + (d[1] + d[2]) + "</td></tr>";
+      }).join("") + "</tbody></table>";
+  }
+
+  function drawRate(rows) {
+    var data = byWeek(rows);
+    if (!data.length) { emptyInto("c-rate"); document.getElementById("t-rate").innerHTML = ""; return; }
+    var W = 620, H = 222, L = 54, R = 46, T = 16, B = 32;
+    var pw = W - L - R, ph = H - T - B;
+    var svg = svgEl("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Taxa de conclusão por semana" });
+    [0, 25, 50, 75, 100].forEach(function (t) {
+      var y = T + ph - (t / 100) * ph;
+      svg.appendChild(svgEl("line", { x1: L, x2: L + pw, y1: y, y2: y, stroke: "var(--grid)", "stroke-width": 1 }));
+      svg.appendChild(axisText(L - 9, y + 3.5, t + "%", "end"));
+    });
+    svg.appendChild(svgEl("line", { x1: L, x2: L + pw, y1: T + ph, y2: T + ph, stroke: "var(--axis)", "stroke-width": 1 }));
+
+    var step = data.length > 1 ? pw / (data.length - 1) : 0;
+    var pts = data.map(function (r, i) {
+      return [data.length > 1 ? L + i * step : L + pw / 2, T + ph - (r[1] / 100) * ph];
+    });
+    if (data.length > 1) {
+      svg.appendChild(svgEl("path", {
+        d: pts.map(function (p, i) { return (i ? "L" : "M") + p[0] + "," + p[1]; }).join(""),
+        fill: "none", stroke: "var(--s1)", "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round"
+      }));
+    }
+    data.forEach(function (r, i) {
+      var p = pts[i];
+      svg.appendChild(svgEl("circle", { cx: p[0], cy: p[1], r: 4.5, fill: "var(--s1)", stroke: "var(--surface)", "stroke-width": 2 }));
+      svg.appendChild(axisText(p[0], T + ph + 17, r[0], "middle", 10));
+      var hw = step || pw;
+      var hit = svgEl("rect", { x: p[0] - hw / 2, y: T, width: hw, height: ph, class: "hit" });
+      bindTip(hit, '<div class="t-title">' + esc(r[0]) + "</div>" + tipRow("var(--s1)", "Taxa de conclusão", NF(r[1], 1) + "%"));
+      svg.appendChild(hit);
+    });
+    var last = pts[pts.length - 1];
+    svg.appendChild(axisText(last[0] + 9, last[1] + 4, NF(data[data.length - 1][1], 1) + "%", "start", 11.5, "ink"));
+    mount("c-rate").appendChild(svg);
+
+    document.getElementById("t-rate").innerHTML =
+      "<table><thead><tr><th>Semana ISO</th><th class='num'>Taxa de conclusão</th></tr></thead><tbody>" +
+      data.map(function (r) { return "<tr><td class='mono'>" + esc(r[0]) + "</td><td class='num'>" + NF(r[1], 1) + "%</td></tr>"; }).join("") +
+      "</tbody></table><p style='font-size:12px;color:var(--ink-3);margin:8px 0 0'>* Semana em curso, ainda parcial.</p>";
+  }
+
+  function hBars(mountId, tableId, data, opts) {
+    if (!data.length) { emptyInto(mountId); document.getElementById(tableId).innerHTML = ""; return; }
+    var single = opts.single !== false;
+    var W = opts.W || 536, L = opts.L || 132, R = 40, T = 8, B = 6;
+    var rowH = opts.rowH || 30, barH = Math.min(20, rowH - 10);
+    var H = T + data.length * rowH + B;
+    var pw = W - L - R;
+    var max = Math.max.apply(null, data.map(function (d) { return d[1]; })) || 1;
+    var svg = svgEl("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": opts.label });
+    data.forEach(function (d, i) {
+      var y = T + i * rowH + (rowH - barH) / 2;
+      var w = (d[1] / max) * pw;
+      var fill = single ? "var(--s1)" : "var(--ord-" + Math.min(4, i + 1) + ")";
+      svg.appendChild(svgEl("path", { d: rightRoundPath(L, y, Math.max(w, 2), barH, 4), fill: fill }));
+      svg.appendChild(axisText(L - 10, y + barH / 2 + 3.5, d[0], "end", 11, "ink-2"));
+      svg.appendChild(axisText(L + Math.max(w, 2) + 8, y + barH / 2 + 3.5, NF(d[1]), "start", 11.5, "ink"));
+      var hit = svgEl("rect", { x: 0, y: T + i * rowH, width: W, height: rowH, class: "hit" });
+      bindTip(hit, '<div class="t-title">' + esc(d[0]) + "</div>" + tipRow(fill, opts.metric, NF(d[1])));
+      svg.appendChild(hit);
+    });
+    mount(mountId).appendChild(svg);
+    document.getElementById(tableId).innerHTML =
+      "<table><thead><tr><th>" + esc(opts.dim) + "</th><th class='num'>" + esc(opts.metric) + "</th></tr></thead><tbody>" +
+      data.map(function (d) { return "<tr><td>" + esc(d[0]) + "</td><td class='num'>" + NF(d[1]) + "</td></tr>"; }).join("") +
+      "</tbody></table>";
+  }
+
+  function drawDetail(rows) {
+    var sorted = rows.slice().sort(function (a, b) {
+      if (a.data !== b.data) return a.data < b.data ? 1 : -1;
+      return (b.prot || "") > (a.prot || "") ? 1 : -1;
+    });
+    var head = "<table><thead><tr><th>Protocolo</th><th>Data</th><th>Motivo de contato</th>" +
+      "<th>Departamento</th><th>Quem enviou</th><th>Status</th><th class='num'>Aging (d)</th></tr></thead><tbody>";
+    if (!sorted.length) {
+      document.getElementById("t-detail").innerHTML =
+        head + "</tbody></table><div class='empty'>Nenhuma solicitação nesse filtro.</div>";
+      return;
+    }
+    var body = sorted.map(function (r) {
+      var open = isOpen(r);
+      var age = open ? daysBetween(r.data, TODAY) : null;
+      var chip = open
+        ? (age > 3 ? '<span class="chip crit">Fora do SLA</span>' : '<span class="chip warn">Pendente</span>')
+        : '<span class="chip ok">Concluída</span>';
+      return "<tr><td class='mono'>" + esc(r.prot || "—") + "</td><td class='mono'>" + brFull(r.data) +
+        "</td><td>" + esc(r.motivo) + "</td><td>" + esc(r.depto) + "</td><td class='mono'>" + esc(r.quem) +
+        "</td><td>" + chip + "</td><td class='num'>" + (open ? age : "—") + "</td></tr>";
+    }).join("");
+    document.getElementById("t-detail").innerHTML = head + body + "</tbody></table>";
+  }
+
+  /* ================= KPIs ================= */
+  function drawKpis(rows, from, to) {
+    var total = rows.length;
+    var done = rows.filter(function (r) { return !isOpen(r); }).length;
+    var open = total - done;
+    document.getElementById("k-total").textContent = NF(total);
+    document.getElementById("k-done").textContent = NF(done);
+    document.getElementById("k-open").textContent = NF(open);
+    document.getElementById("k-rate").innerHTML = total
+      ? NF(Math.round(100 * done / total)) + "<small>%</small>"
+      : "—";
+    document.getElementById("k-span").textContent = brShort(from) + " a " + brShort(to);
+    document.getElementById("k-frac").textContent = total ? done + " de " + total : "sem dados";
+  }
+
+  /* ================= filtros ================= */
+  var els = {
+    from: document.getElementById("f-from"),
+    to: document.getElementById("f-to"),
+    status: document.getElementById("f-status"),
+    motivo: document.getElementById("f-motivo"),
+    depto: document.getElementById("f-depto"),
+    count: document.getElementById("f-count"),
+    clear: document.getElementById("f-clear")
+  };
+  var DEFAULTS = { from: "2026-09-02", to: "2026-09-09" };
+
+  function fillSelect(el, values) {
+    values.forEach(function (v) {
+      var o = document.createElement("option");
+      o.value = v; o.textContent = v;
+      el.appendChild(o);
+    });
+  }
+  fillSelect(els.status, ["Concluída", "Pendente"]);
+  fillSelect(els.motivo, countBy(ROWS, "motivo").map(function (d) { return d[0]; }));
+  fillSelect(els.depto, countBy(ROWS, "depto").map(function (d) { return d[0]; }));
+
+  function currentRows() {
+    var from = els.from.value || DEFAULTS.from;
+    var to = els.to.value || DEFAULTS.to;
+    if (from > to) { var t = from; from = to; to = t; }
+    return {
+      from: from, to: to,
+      rows: ROWS.filter(function (r) {
+        if (r.data < from || r.data > to) return false;
+        if (els.status.value && r.status !== els.status.value) return false;
+        if (els.motivo.value && r.motivo !== els.motivo.value) return false;
+        if (els.depto.value && r.depto !== els.depto.value) return false;
+        return true;
+      })
+    };
+  }
+
+  function render() {
+    var c = currentRows(), rows = c.rows;
+    hideTip();
+    drawKpis(rows, c.from, c.to);
+    drawDaily(rows);
+    drawRate(rows);
+    hBars("c-aging", "t-aging", agingBuckets(rows), {
+      single: false, W: 470, L: 88, rowH: 34, dim: "Faixa de aging", metric: "Em aberto",
+      label: "Barras horizontais do aging das solicitações em aberto"
+    });
+    hBars("c-motivo", "t-motivo", countBy(rows, "motivo"), {
+      W: 552, L: 148, dim: "Motivo de contato", metric: "Solicitações",
+      label: "Barras horizontais de solicitações por motivo de contato"
+    });
+    hBars("c-depto", "t-depto", countBy(rows, "depto"), {
+      W: 552, L: 148, dim: "Departamento", metric: "Solicitações",
+      label: "Barras horizontais de solicitações por departamento"
+    });
+    drawDetail(rows);
+    var active = (els.status.value ? 1 : 0) + (els.motivo.value ? 1 : 0) + (els.depto.value ? 1 : 0) +
+      ((c.from !== DEFAULTS.from || c.to !== DEFAULTS.to) ? 1 : 0);
+    els.count.innerHTML = "<b>" + rows.length + "</b> de " + ROWS.length + " solicitações" +
+      (active ? " · " + active + (active > 1 ? " filtros ativos" : " filtro ativo") : " · sem filtro");
+    els.clear.hidden = !active;
+  }
+
+  ["from", "to", "status", "motivo", "depto"].forEach(function (k) {
+    els[k].addEventListener("change", render);
+  });
+  els.clear.addEventListener("click", function () {
+    els.from.value = DEFAULTS.from; els.to.value = DEFAULTS.to;
+    els.status.value = ""; els.motivo.value = ""; els.depto.value = "";
+    render();
+  });
+
+  /* ================= abas e tabelas ================= */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-toggle]"), function (btn) {
+    btn.addEventListener("click", function () {
+      var el = document.getElementById(btn.getAttribute("data-toggle"));
+      var card = btn.closest(".card");
+      var plot = card.querySelector(".plot");
+      var open = el.hidden;
+      el.hidden = !open;
+      if (plot) plot.hidden = open;
+      btn.textContent = open ? "Gráfico" : "Tabela";
+    });
+  });
+
+  var tabs = [
+    [document.getElementById("tab-dash"), document.getElementById("p-dash")],
+    [document.getElementById("tab-guide"), document.getElementById("p-guide")]
+  ];
+  tabs.forEach(function (pair) {
+    pair[0].addEventListener("click", function () {
+      tabs.forEach(function (p) {
+        var on = p === pair;
+        p[0].setAttribute("aria-selected", on ? "true" : "false");
+        p[1].hidden = !on;
+      });
+      hideTip();
+      window.scrollTo({ top: 0, behavior: "instant" });
+    });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

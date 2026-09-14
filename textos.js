@@ -96,3 +96,11 @@
     iniciar();
   }
 })();
+
+
+        /* rotulos consistentes: PENDENTE -> EM ABERTO e titulo do aging */
+function ajustarRotulosPainel() { var ts = document.querySelectorAll('table'); var t = ts.length ? ts[ts.length - 1] : null; var rs = t && t.tBodies[0] ? t.tBodies[0].rows : []; for (var j = 0; j < rs.length; j++) { var cel = rs[j].cells[5]; var el = cel ? (cel.firstElementChild || cel) : null; if (el && el.textContent.trim().toUpperCase() === 'PENDENTE') el.textContent = 'EM ABERTO'; } var it = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT), n; while ((n = it.nextNode())) { if (n.nodeValue.indexOf('Aging dos pendentes') > -1) n.nodeValue = n.nodeValue.replace('Aging dos pendentes', 'Aging dos itens em aberto'); } }
+var esperandoRotulos = false;
+function agendarRotulos() { if (esperandoRotulos) return; esperandoRotulos = true; setTimeout(function () { esperandoRotulos = false; ajustarRotulosPainel(); }, 100); }
+function comecarRotulos() { ajustarRotulosPainel(); new MutationObserver(agendarRotulos).observe(document.querySelector('main') || document.body, { childList: true, subtree: true }); document.addEventListener('change', agendarRotulos); }
+if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', comecarRotulos); } else { comecarRotulos(); }

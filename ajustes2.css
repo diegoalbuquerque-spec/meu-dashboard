@@ -88,3 +88,8 @@ table th{ cursor:pointer; user-select:none; white-space:nowrap; }
 table th:hover{ color:#f2f5f8; }
 table th[data-ord]::after{ content:"\25B2"; font-size:9px; margin-left:5px; }
 table th[data-ord="desc"]::after{ content:"\25BC"; }
+
+
+/* ---------- Conteudo de proposta removido ---------- */
+.brand span{ display:none !important; }
+.card .why{ display:none !important; }

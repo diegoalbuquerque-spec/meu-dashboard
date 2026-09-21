@@ -104,3 +104,18 @@ var esperandoRotulos = false;
 function agendarRotulos() { if (esperandoRotulos) return; esperandoRotulos = true; setTimeout(function () { esperandoRotulos = false; ajustarRotulosPainel(); }, 100); }
 function comecarRotulos() { ajustarRotulosPainel(); new MutationObserver(agendarRotulos).observe(document.querySelector('main') || document.body, { childList: true, subtree: true }); document.addEventListener('change', agendarRotulos); }
 if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', comecarRotulos); } else { comecarRotulos(); }
+
+/* caixa do grafico: rotulo longo vazava para fora do cartao.
+   Reajusta o viewBox pelo conteudo real, medido com getBBox. */
+function ajustarGraficosPainel() { var svgs = document.querySelectorAll('.plot svg'); for (var i = 0; i < svgs.length; i++) { var s = svgs[i]; if (s.dataset.vbOk) continue; var b = null; try { b = s.getBBox(); } catch (e) { b = null; } if (!b || !b.width) continue; var alt = s.viewBox && s.viewBox.baseVal ? s.viewBox.baseVal.height : 0; if (!alt) continue; var pad = 6; s.setAttribute('viewBox', (b.x - pad) + ' 0 ' + (b.width + pad * 2) + ' ' + alt); s.dataset.vbOk = '1'; } }
+
+/* protocolo vira link para a thread no Slack (#suporte-totvs) */
+var BUSCA_SLACK = 'https://shippify.slack.com/search?q=';
+function linkarProtocolos() { var ts = document.querySelectorAll('table'); var t = ts.length ? ts[ts.length - 1] : null; var rs = t && t.tBodies[0] ? t.tBodies[0].rows : []; for (var i = 0; i < rs.length; i++) { var c = rs[i].cells[0]; if (!c || c.querySelector('a')) continue; var p = c.textContent.trim(); if (!/^[0-9]{9,}$/.test(p)) continue; var a = document.createElement('a'); a.href = BUSCA_SLACK + encodeURIComponent('in:#suporte-totvs ' + p); a.target = '_blank'; a.rel = 'noopener'; a.title = 'Abrir a solicitação no Slack'; a.textContent = p; a.style.color = '#f5a524'; a.style.textDecoration = 'none'; a.style.borderBottom = '1px dotted rgba(245,165,36,.45)'; c.textContent = ''; c.appendChild(a); } }
+
+function extrasPainel() { ajustarGraficosPainel(); linkarProtocolos(); }
+var esperandoExtras = false;
+function agendarExtras() { if (esperandoExtras) return; esperandoExtras = true; setTimeout(function () { esperandoExtras = false; extrasPainel(); }, 120); }
+function comecarExtras() { extrasPainel(); new MutationObserver(agendarExtras).observe(document.querySelector('main') || document.body, { childList: true, subtree: true }); document.addEventListener('change', agendarExtras); document.addEventListener('click', agendarExtras); }
+if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', comecarExtras); } else { comecarExtras(); }
+

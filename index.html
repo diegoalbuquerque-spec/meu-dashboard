@@ -13,7 +13,7 @@
   img { max-width: 100%; }
   [hidden] { display: none !important; }
 </style>
-  <link rel="stylesheet" href="ajustes.css?v=202610151301">
+  <link rel="stylesheet" href="ajustes.css?v=202610151853">
   <link rel="stylesheet" href="ajustes2.css?v=2">
   <script defer src="ajustes.js?v=1"></script>
   <script defer src="textos.js?v=2"></script>
@@ -383,15 +383,15 @@
 
     <div class="note">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.6v4.2M8 11.2v.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      <div><b>Dados reais</b> da aba <span class="mono">Respostas do formulário</span>, lidos em 15/10/2026 13h01. São as 51 solicitações que existem nessa base — ela começou em 02/09. O histórico anterior (70 solicitações desde 25/06) está na planilha antiga e não tem coluna de status, por isso não entra aqui. Os quatro filtros acima funcionam sobre esses registros — tudo na página recalcula.</div>
+      <div><b>Dados reais</b> da aba <span class="mono">Respostas do formulário</span>, lidos em 15/10/2026 18h53. São as 53 solicitações que existem nessa base — ela começou em 02/09. O histórico anterior (70 solicitações desde 25/06) está na planilha antiga e não tem coluna de status, por isso não entra aqui. Os quatro filtros acima funcionam sobre esses registros — tudo na página recalcula.</div>
     </div>
 
     <div class="filters">
       <div class="ctl range">
         <span class="k">Período</span>
-        <input type="date" id="f-from" aria-label="Data inicial" min="2026-09-02" max="2026-10-08" value="2026-09-02">
+        <input type="date" id="f-from" aria-label="Data inicial" min="2026-09-02" max="2026-10-15" value="2026-09-02">
         <span class="dash">–</span>
-        <input type="date" id="f-to" aria-label="Data final" min="2026-09-02" max="2026-10-08" value="2026-10-08">
+        <input type="date" id="f-to" aria-label="Data final" min="2026-09-02" max="2026-10-15" value="2026-10-15">
       </div>
       <div class="ctl">
         <span class="k">Status</span>
@@ -819,7 +819,9 @@ END</code></pre>
     { prot: "1791308083", data: "2026-10-06", motivo: "Sugestões", depto: "Produto", quem: "Diego Albuquerque", status: "Concluída" },
     { prot: "1791308719", data: "2026-10-06", motivo: "Acessos", depto: "Tecnologia", quem: "Vinicius Carvalho", status: "Concluída" },
     { prot: "1791462858", data: "2026-10-08", motivo: "Dúvidas fornecedor e produto", depto: "Compras", quem: "Jonathan Ferreira Martins", status: "Pendente" },
-    { prot: "1791491980", data: "2026-10-08", motivo: "Dúvida outros", depto: "Operações", quem: "Anderson Moreira", status: "Pendente" }
+    { prot: "1791491980", data: "2026-10-08", motivo: "Dúvida outros", depto: "Operações", quem: "Anderson Moreira", status: "Pendente" },
+    { prot: "1792094220", data: "2026-10-15", motivo: "Acessos", depto: "Financeiro", quem: "Jessyca Barros", status: "Pendente" },
+    { prot: "1792094271", data: "2026-10-15", motivo: "Acessos", depto: "Financeiro", quem: "Jessyca Barros", status: "Pendente" }
   ];
   var DONE = "Concluída";
 
@@ -1132,7 +1134,7 @@ END</code></pre>
     count: document.getElementById("f-count"),
     clear: document.getElementById("f-clear")
   };
-  var DEFAULTS = { from: "2026-09-02", to: "2026-10-08" };
+  var DEFAULTS = { from: "2026-09-02", to: "2026-10-15" };
 
   function fillSelect(el, values) {
     values.forEach(function (v) {

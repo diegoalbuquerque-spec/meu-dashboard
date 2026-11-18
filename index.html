@@ -13,7 +13,7 @@
   img { max-width: 100%; }
   [hidden] { display: none !important; }
 </style>
-  <link rel="stylesheet" href="ajustes.css?v=202611171716">
+  <link rel="stylesheet" href="ajustes.css?v=202611181646">
   <link rel="stylesheet" href="ajustes2.css?v=2">
   <script defer src="ajustes.js?v=1"></script>
   <script defer src="textos.js?v=2"></script>
@@ -383,15 +383,15 @@
 
     <div class="note">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.6v4.2M8 11.2v.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      <div><b>Dados reais</b> da aba <span class="mono">Respostas do formulário</span>, lidos em 17/11/2026 17h16. São as 71 solicitações que existem nessa base — ela começou em 02/09. O histórico anterior (70 solicitações desde 25/06) está na planilha antiga e não tem coluna de status, por isso não entra aqui. Os quatro filtros acima funcionam sobre esses registros — tudo na página recalcula.</div>
+      <div><b>Dados reais</b> da aba <span class="mono">Respostas do formulário</span>, lidos em 18/11/2026 16h46. São as 73 solicitações que existem nessa base — ela começou em 02/09. O histórico anterior (70 solicitações desde 25/06) está na planilha antiga e não tem coluna de status, por isso não entra aqui. Os quatro filtros acima funcionam sobre esses registros — tudo na página recalcula.</div>
     </div>
 
     <div class="filters">
       <div class="ctl range">
         <span class="k">Período</span>
-        <input type="date" id="f-from" aria-label="Data inicial" min="2026-09-02" max="2026-11-16" value="2026-09-02">
+        <input type="date" id="f-from" aria-label="Data inicial" min="2026-09-02" max="2026-11-18" value="2026-09-02">
         <span class="dash">–</span>
-        <input type="date" id="f-to" aria-label="Data final" min="2026-09-02" max="2026-11-16" value="2026-11-16">
+        <input type="date" id="f-to" aria-label="Data final" min="2026-09-02" max="2026-11-18" value="2026-11-18">
       </div>
       <div class="ctl">
         <span class="k">Status</span>
@@ -767,7 +767,7 @@ END</code></pre>
   "use strict";
 
   /* ================= dados reais (9 registros, leitura 09/09/2026 18h28) ================= */
-  var TODAY = "2026-11-17";
+  var TODAY = "2026-11-18";
   var ROWS = [
     { prot: null, data: "2026-09-02", motivo: "Dúvidas fornecedor e produto", depto: "Jurídico", quem: "Henrique Amorim Guarnieri", status: "Concluída" },
     { prot: null, data: "2026-09-03", motivo: "Acessos", depto: "Jurídico", quem: "Henrique Amorim Guarnieri", status: "Concluída" },
@@ -839,7 +839,9 @@ END</code></pre>
     { prot: "1793797242", data: "2026-11-04", motivo: "Dúvida outros", depto: "Operações", quem: "Naiara Domingues", status: "Pendente" },
     { prot: "1794168183", data: "2026-11-08", motivo: "Acessos", depto: "Jurídico", quem: "Eduardo Braz", status: "Pendente" },
     { prot: "1794257151", data: "2026-11-09", motivo: "Dúvidas fornecedor e produto", depto: "Operações", quem: "Vitor Miranda", status: "Pendente" },
-    { prot: "1794851986", data: "2026-11-16", motivo: "Acessos", depto: "Financeiro", quem: "Camila Salmasso", status: "Pendente" }
+    { prot: "1794851986", data: "2026-11-16", motivo: "Acessos", depto: "Financeiro", quem: "Camila Salmasso", status: "Pendente" },
+    { prot: "1795014175", data: "2026-11-18", motivo: "Acessos", depto: "Compras", quem: "David Casal Barbosa", status: "Pendente" },
+    { prot: "1795020020", data: "2026-11-18", motivo: "Dúvidas de centro de custo", depto: "Compras", quem: "David Casal Barbosa", status: "Pendente" }
   ];
   var DONE = "Concluída";
 
@@ -1152,7 +1154,7 @@ END</code></pre>
     count: document.getElementById("f-count"),
     clear: document.getElementById("f-clear")
   };
-  var DEFAULTS = { from: "2026-09-02", to: "2026-11-16" };
+  var DEFAULTS = { from: "2026-09-02", to: "2026-11-18" };
 
   function fillSelect(el, values) {
     values.forEach(function (v) {
